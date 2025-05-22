@@ -1,0 +1,19 @@
+services:
+  csharp-webapplication1:
+    build:
+      context: ./WebApplication1
+      dockerfile: ../Dockerfile  # Uses the Dockerfile at project root
+    container_name: csharp-webapplication1
+    restart: unless-stopped
+    init: true
+    ports:
+      - "8080:8080"  # Exposes the port defined in Dockerfile (ASPNETCORE_URLS)
+    # env_file: ./WebApplication1/.env  # Uncomment if .env file exists
+    # Add depends_on here if you add external services (e.g., databases)
+    # networks: [appnet]  # Uncomment if you add more services that need to communicate
+
+# networks:
+#   appnet:
+#     driver: bridge
+
+# No volumes section is included, as there are no persistent data services detected.

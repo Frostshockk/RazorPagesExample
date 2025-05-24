@@ -1,93 +1,154 @@
 ﻿@page
 @model WebApplication1.Pages.IndexModel
-@using WebApplication1.Models;
-@using System.Linq;
+@using WebApplication1.Models
+@using System.Linq
 @{
     ViewData["Title"] = "My Kanban Board";
 }
 
-<div class="container">
-    <div class="row">
+<div class="container-fluid">
+    <div class="row flex-nowrap">
         <!-- To Do Column -->
-        <div class="col-md-4 board-column">
-            <h3>To Do</h3>
-            <div class="tasks-list" data-status="todo">
+        <div class="col-md-4 board-column d-flex flex-column" data-status="todo">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">To Do</h3>
+                <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == "todo")</span>
+            </div>
+            <div class="tasks-list flex-grow-1">
                 @foreach (var task in Model.Tasks.Where(t => t.Status == "todo").OrderBy(t => t.Position))
                 {
-                    <div class="task-card" data-task-id="@task.Id">
-                        <h5>@task.Title</h5>
-                        <p>@task.Description</p>
-                        <div class="task-actions">
-                            <form method="post" asp-page-handler="MoveTask">
-                                <input type="hidden" name="taskId" value="@task.Id" />
-                                <input type="hidden" name="newStatus" value="inprogress" />
-                                <button type="submit" class="btn btn-sm btn-primary">→ In Progress</button>
-                            </form>
+                    <div class="task-card mb-2" data-task-id="@task.Id">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">@task.Title</h5>
+                                <p class="text-muted small mb-0">@task.Description</p>
+                            </div>
+                            <div class="task-actions">
+                                <form method="post" asp-page-handler="MoveTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <input type="hidden" name="newStatus" value="inprogress" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">→</button>
+                                </form>
+
+                                <form method="post" asp-page-handler="DeleteTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
-            <form method="post" asp-page-handler="AddTask" class="mt-2">
+            <form method="post" asp-page-handler="AddTask" class="mt-3">
                 <input type="hidden" name="status" value="todo" />
-                <input type="text" name="title" placeholder="Название задачи" required class="form-control" />
-                <button type="submit" class="btn btn-success btn-sm mt-2">+ Добавить</button>
+                <div class="input-group mb-2">
+                    <input type="text" name="title" placeholder="New Task" required
+                           class="form-control form-control-sm" />
+                </div>
+                <div class="input-group mb-2">
+                    <textarea name="description" placeholder="Description"
+                              class="form-control form-control-sm"></textarea>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn btn-success btn-sm w-100">+</button>
+                </div>
             </form>
         </div>
 
         <!-- In Progress Column -->
-        <div class="col-md-4 board-column">
-            <h3>In Progress</h3>
-            <div class="tasks-list" data-status="inprogress">
+        <div class="col-md-4 board-column d-flex flex-column" data-status="inprogress">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">In Progress</h3>
+                <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == "inprogress")</span>
+            </div>
+            <div class="tasks-list flex-grow-1">
                 @foreach (var task in Model.Tasks.Where(t => t.Status == "inprogress").OrderBy(t => t.Position))
                 {
-                    <div class="task-card" data-task-id="@task.Id">
-                        <h5>@task.Title</h5>
-                        <p>@task.Description</p>
-                        <div class="task-actions">
-                            <form method="post" asp-page-handler="MoveTask">
-                                <input type="hidden" name="taskId" value="@task.Id" />
-                                <input type="hidden" name="newStatus" value="done" />
-                                <button type="submit" class="btn btn-sm btn-primary">→ Done</button>
-                            </form>
-                            <form method="post" asp-page-handler="MoveTask" class="mt-1">
-                                <input type="hidden" name="taskId" value="@task.Id" />
-                                <input type="hidden" name="newStatus" value="todo" />
-                                <button type="submit" class="btn btn-sm btn-secondary">← Back</button>
-                            </form>
+                    <div class="task-card mb-2" data-task-id="@task.Id">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">@task.Title</h5>
+                                <p class="text-muted small mb-0">@task.Description</p>
+                            </div>
+                            <div class="task-actions d-flex flex-column gap-1">
+                                <form method="post" asp-page-handler="MoveTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <input type="hidden" name="newStatus" value="done" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">→</button>
+                                </form>
+                                <form method="post" asp-page-handler="MoveTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <input type="hidden" name="newStatus" value="todo" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">←</button>
+                                </form>
+                                <form method="post" asp-page-handler="DeleteTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
-            <form method="post" asp-page-handler="AddTask" class="mt-2">
-                <input type="hidden" name="status" value="inprogress" />
-                <input type="text" name="title" placeholder="Название задачи" required class="form-control" />
-                <button type="submit" class="btn btn-success btn-sm mt-2">+ Добавить</button>
+            <form method="post" asp-page-handler="AddTask" class="mt-3">
+                <input type="hidden" name="status" value="todo" />
+                <div class="input-group mb-2">
+                    <input type="text" name="title" placeholder="New Task" required
+                           class="form-control form-control-sm" />
+                </div>
+                <div class="input-group mb-2">
+                    <textarea name="description" placeholder="Description"
+                              class="form-control form-control-sm"></textarea>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn btn-success btn-sm w-100">+</button>
+                </div>
             </form>
         </div>
 
         <!-- Done Column -->
-        <div class="col-md-4 board-column">
-            <h3>Done</h3>
-            <div class="tasks-list" data-status="done">
+        <div class="col-md-4 board-column d-flex flex-column" data-status="done">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">Done</h3>
+                <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == "done")</span>
+            </div>
+            <div class="tasks-list flex-grow-1">
                 @foreach (var task in Model.Tasks.Where(t => t.Status == "done").OrderBy(t => t.Position))
                 {
-                    <div class="task-card" data-task-id="@task.Id">
-                        <h5>@task.Title</h5>
-                        <p>@task.Description</p>
-                        <div class="task-actions">
-                            <form method="post" asp-page-handler="MoveTask">
-                                <input type="hidden" name="taskId" value="@task.Id" />
-                                <input type="hidden" name="newStatus" value="inprogress" />
-                                <button type="submit" class="btn btn-sm btn-secondary">← Back</button>
-                            </form>
+                    <div class="task-card mb-2" data-task-id="@task.Id">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">@task.Title</h5>
+                                <p class="text-muted small mb-0">@task.Description</p>
+                            </div>
+                            <div class="task-actions">
+                                <form method="post" asp-page-handler="MoveTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <input type="hidden" name="newStatus" value="inprogress" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">←</button>
+                                </form>
+                                <form method="post" asp-page-handler="DeleteTask">
+                                    <input type="hidden" name="taskId" value="@task.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
-            <form method="post" asp-page-handler="AddTask" class="mt-2">
-                <input type="hidden" name="status" value="done" />
-                <input type="text" name="title" placeholder="Название задачи" required class="form-control" />
-                <button type="submit" class="btn btn-success btn-sm mt-2">+ Добавить</button>
+            <form method="post" asp-page-handler="AddTask" class="mt-3">
+                <input type="hidden" name="status" value="todo" />
+                <div class="input-group mb-2">
+                    <input type="text" name="title" placeholder="New Task" required
+                           class="form-control form-control-sm" />
+                </div>
+                <div class="input-group mb-2">
+                    <textarea name="description" placeholder="Description"
+                              class="form-control form-control-sm"></textarea>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn btn-success btn-sm w-100">+</button>
+                </div>
             </form>
         </div>
     </div>
@@ -95,30 +156,78 @@
 
 <style>
     .board-column {
-        background-color: #f0f0f0;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 10px;
-        min-height: 600px;
-    }
-    
-    .task-card {
-        background: white;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 3px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 0 0.5rem;
+        height: 85vh;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
     }
 
+        .board-column:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+
+    .tasks-list {
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        scrollbar-width: thin;
+    }
+
+    .task-card {
+        background: white;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        border: 1px solid #e9ecef;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
     .board-column[data-status="todo"] {
-        border-top: 5px solid #ff6b6b;
+        border-top: 4px solid #ff6b6b;
     }
 
     .board-column[data-status="inprogress"] {
-        border-top: 5px solid #4dabf7;
+        border-top: 4px solid #4dabf7;
     }
 
     .board-column[data-status="done"] {
-        border-top: 5px solid #51cf66;
+        border-top: 4px solid #51cf66;
+    }
+
+    .tasks-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .tasks-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .tasks-list::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+        .tasks-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    @@media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+            margin: 0;
+        }
+
+        .board-column {
+            height: auto;
+            min-height: 50vh;
+            margin: 0.5rem 0;
+        }
     }
 </style>

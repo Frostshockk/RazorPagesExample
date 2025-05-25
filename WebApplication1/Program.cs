@@ -5,7 +5,13 @@ using WebApplication1.Data;
 using WebApplication1.Models;
 using WebApplication1.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+var isDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+var environmentName = isDocker ? "Docker" : "Development";
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    EnvironmentName = environmentName
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -45,7 +51,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
-    
+
 
     if (!context.BoardTasks.Any())
     {

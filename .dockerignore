@@ -1,9 +1,10 @@
-# Version control
+# Ignore version control directories and files
 .git/
 .gitignore
 .gitattributes
+.github/
 
-# IDE and editor folders/files
+# Ignore IDE and editor folders/files
 .vs/
 .idea/
 .vscode/
@@ -12,49 +13,56 @@
 *.userosscache
 *.sln.docstates
 *.vsidx
-*.dtbcache.v2
-*.futdcache.v2
+*.swp
+*.swo
 
-# Build outputs and intermediate files
+# Ignore build output directories
 bin/
 obj/
 
-# ASP.NET Core specific
+# Ignore local database and cache files
 *.db
 *.db-shm
 *.db-wal
-*.pdb
-*.mdb
-*.cache
-*.log
+*.dtbcache*
+*.futdcache*
 
-# Docker and Compose files
-Dockerfile*
-docker-compose*
+# Ignore backup and temp files
+*.bak
+*.tmp
+*.temp
+~*
+
+# Ignore Docker-related files (except main Dockerfile)
 .dockerignore
+.dockerignore.*
+Dockerfile.*
+docker-compose*
 
-# Environment and secrets
+# Ignore environment and secret files
 .env*
 *.env
 *.pem
 *.key
 *.crt
 
-# Temporary and backup files
-*.tmp
-*.temp
-*.swp
-*.swo
-*.bak
-*.old
-
-# Documentation and metadata
-docs/
-*.md
+# Ignore documentation and markdown files
 README*
+*.md
 LICENSE*
 
-# Node.js, Python, Go, Java (not detected, but for completeness)
+# Ignore test and debug files
+*.log
+debug/
+test/
+tests/
+
+# Ignore local and config files
+.local/
+config.local.*
+*.local.yml
+
+# Ignore node, python, go, java, and other language-specific artifacts (for completeness)
 node_modules/
 npm-debug.log
 yarn-debug.log
@@ -70,18 +78,18 @@ target/
 *.class
 .gradle/
 
-# Local development and config
-.local/
-local/
-config.local.*
-*.local.yml
+# Ignore other common temp and cache folders
+.tmp/
+tmp/
+.cache/
 
-# Other VCS
-.svn/
-.hg/
+# Project-specific: Exclude migration snapshots if not needed (uncomment if desired)
+# Migrations/*ModelSnapshot.cs
 
-# GitHub workflows (not needed in build context)
-.github/
+# Exclude everything in .vs/ (already covered above), sd/ (empty), and any other skipped directories
+sd/
 
-# Exclude empty directories
-**/.empty
+# Exclude any other backup or temp files
+*~
+
+# End of .dockerignore

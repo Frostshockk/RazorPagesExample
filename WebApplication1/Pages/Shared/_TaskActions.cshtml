@@ -1,0 +1,40 @@
+﻿@model WebApplication1.Pages.IndexModel.TaskActionsModel
+
+@if (Model.CurrentStatus != "done")
+{
+    <form method="post" asp-page-handler="MoveTask">
+        <input type="hidden" name="taskId" value="@Model.TaskId" />
+        <input type="hidden" name="newStatus" value="@GetNextStatus(Model.CurrentStatus)" />
+        <button type="submit" class="btn btn-sm btn-outline-primary">→</button>
+    </form>
+}
+
+@if (Model.CurrentStatus != "todo")
+{
+    <form method="post" asp-page-handler="MoveTask">
+        <input type="hidden" name="taskId" value="@Model.TaskId" />
+        <input type="hidden" name="newStatus" value="@GetPrevStatus(Model.CurrentStatus)" />
+        <button type="submit" class="btn btn-sm btn-outline-secondary">←</button>
+    </form>
+}
+
+<form method="post" asp-page-handler="DeleteTask">
+    <input type="hidden" name="taskId" value="@Model.TaskId" />
+    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
+</form>
+
+@functions {
+    string GetNextStatus(string currentStatus) => currentStatus switch
+    {
+        "todo" => "inprogress",
+        "inprogress" => "done",
+        _ => currentStatus
+    };
+
+    string GetPrevStatus(string currentStatus) => currentStatus switch
+    {
+        "inprogress" => "todo",
+        "done" => "inprogress",
+        _ => currentStatus
+    };
+}

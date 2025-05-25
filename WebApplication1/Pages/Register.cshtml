@@ -10,12 +10,12 @@
             <h2>@ViewData["Title"]</h2>
             <form method="post">
                 <div class="form-group">
-                    <label asp-for="Input.Name">Полное имя</label>
+                    <label asp-for="Input.Name">Full Name</label>
                     <input asp-for="Input.Name" class="form-control" />
                     <span asp-validation-for="Input.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.UserName">Имя пользователя</label>
+                    <label asp-for="Input.UserName">Username</label>
                     <input asp-for="Input.UserName" class="form-control" />
                     <span asp-validation-for="Input.UserName" class="text-danger"></span>
                 </div>
@@ -25,16 +25,16 @@
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.Password">Пароль</label>
+                    <label asp-for="Input.Password">Password</label>
                     <input asp-for="Input.Password" type="password" class="form-control" />
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Input.ConfirmPassword">Подтвердите пароль</label>
+                    <label asp-for="Input.ConfirmPassword">Confirm password</label>
                     <input asp-for="Input.ConfirmPassword" type="password" class="form-control" />
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Зарегистрироваться</button>
+                <button type="submit" class="btn btn-primary mt-3">Register</button>
             </form>
         </div>
     </div>

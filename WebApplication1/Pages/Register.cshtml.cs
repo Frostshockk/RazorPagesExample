@@ -35,7 +35,7 @@ namespace WebApplication1.Pages
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+            [Compare("Password", ErrorMessage = "Passwords do not match")]
             public string ConfirmPassword { get; set; }
         }
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using WebApplication1.Data;
 using WebApplication1.Models;
 
@@ -15,6 +16,11 @@ namespace WebApplication1.Pages
         public IndexModel(AppDbContext context)
         {
             _context = context;
+        }
+        public class TaskActionsModel
+        {
+            public int TaskId { get; set; }
+            public string CurrentStatus { get; set; }
         }
 
         public List<BoardTask> Tasks { get; set; }
@@ -32,6 +38,11 @@ namespace WebApplication1.Pages
         [FromForm] string description,
         [FromForm] string status)
         {
+            var cleanDescription = (description ?? "")
+                .Replace("&nbsp;", " ")
+                .Trim();
+
+
             var newTask = new BoardTask
             {
                 Title = title,
@@ -42,7 +53,7 @@ namespace WebApplication1.Pages
 
             _context.BoardTasks.Add(newTask);
             await _context.SaveChangesAsync();
-            //Console.WriteLine($"Received: {title} | {description} | {status}");
+            Console.WriteLine($"Received: {title} | {description} | {status}");
             return RedirectToPage();
         }
 

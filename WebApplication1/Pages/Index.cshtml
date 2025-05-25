@@ -1,46 +1,49 @@
 ﻿@page
 @model WebApplication1.Pages.IndexModel
+@using WebApplication1.Pages.Shared
 @using WebApplication1.Models
 @using System.Linq
+@using System.Text
 @{
     ViewData["Title"] = "My Kanban Board";
 }
 
 <div class="container-fluid">
     <div class="row flex-nowrap">
-        <!-- To Do Column -->
-        <div class="col-md-4 board-column d-flex flex-column" data-status="todo">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">To Do</h3>
-                <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == "todo")</span>
-            </div>
-            <div class="tasks-list flex-grow-1">
-                @foreach (var task in Model.Tasks.Where(t => t.Status == "todo").OrderBy(t => t.Position))
-                {
-                    <div class="task-card mb-2" data-task-id="@task.Id">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mb-1">@task.Title</h5>
-                                <p class="text-muted small mb-0">@task.Description</p>
-                            </div>
-                            <div class="task-actions">
-                                <form method="post" asp-page-handler="MoveTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <input type="hidden" name="newStatus" value="inprogress" />
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">→</button>
-                                </form>
-
-                                <form method="post" asp-page-handler="DeleteTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
-                                </form>
+        @foreach (var statusColumn in new[] { "todo", "inprogress", "done" })
+        {
+            <div class="col-md-4 board-column d-flex flex-column" data-status="@statusColumn">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">@GetColumnTitle(statusColumn)</h3>
+                    <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == statusColumn)</span>
+                </div>
+                <div class="tasks-list flex-grow-1">
+                    @foreach (var task in Model.Tasks.Where(t => t.Status == statusColumn).OrderBy(t => t.Position))
+                    {
+                        <div class="task-card mb-2" data-task-id="@task.Id">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">@task.Title</h5>
+                                    @if (!string.IsNullOrEmpty(task.Description))
+                                    {
+                                        <div class="text-muted small mb-0 task-description" 
+                                             data-full-text="@task.Description">
+                                            @Html.Raw(task.Description.Replace("\n", "<br/>"))
+                                        </div>
+                                    }
+                                </div>
+                                <div class="task-actions d-flex flex-column gap-1">
+                                    @await Html.PartialAsync("_TaskActions", new IndexModel.TaskActionsModel {
+                                        TaskId = task.Id,
+                                        CurrentStatus = task.Status
+                                    })
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
             </div>
             <form method="post" asp-page-handler="AddTask" class="mt-3">
-                <input type="hidden" name="status" value="todo" />
+                <input type="hidden" name="status" value="@statusColumn" />
                 <div class="input-group mb-2">
                     <input type="text" name="title" placeholder="New Task" required
                            class="form-control form-control-sm" />
@@ -54,103 +57,7 @@
                 </div>
             </form>
         </div>
-
-        <!-- In Progress Column -->
-        <div class="col-md-4 board-column d-flex flex-column" data-status="inprogress">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">In Progress</h3>
-                <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == "inprogress")</span>
-            </div>
-            <div class="tasks-list flex-grow-1">
-                @foreach (var task in Model.Tasks.Where(t => t.Status == "inprogress").OrderBy(t => t.Position))
-                {
-                    <div class="task-card mb-2" data-task-id="@task.Id">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mb-1">@task.Title</h5>
-                                <p class="text-muted small mb-0">@task.Description</p>
-                            </div>
-                            <div class="task-actions d-flex flex-column gap-1">
-                                <form method="post" asp-page-handler="MoveTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <input type="hidden" name="newStatus" value="done" />
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">→</button>
-                                </form>
-                                <form method="post" asp-page-handler="MoveTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <input type="hidden" name="newStatus" value="todo" />
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">←</button>
-                                </form>
-                                <form method="post" asp-page-handler="DeleteTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 }
-            </div>
-            <form method="post" asp-page-handler="AddTask" class="mt-3">
-                <input type="hidden" name="status" value="todo" />
-                <div class="input-group mb-2">
-                    <input type="text" name="title" placeholder="New Task" required
-                           class="form-control form-control-sm" />
-                </div>
-                <div class="input-group mb-2">
-                    <textarea name="description" placeholder="Description"
-                              class="form-control form-control-sm"></textarea>
-                </div>
-                <div class="input-group">
-                    <button type="submit" class="btn btn-success btn-sm w-100">+</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Done Column -->
-        <div class="col-md-4 board-column d-flex flex-column" data-status="done">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">Done</h3>
-                <span class="badge bg-secondary">@Model.Tasks.Count(t => t.Status == "done")</span>
-            </div>
-            <div class="tasks-list flex-grow-1">
-                @foreach (var task in Model.Tasks.Where(t => t.Status == "done").OrderBy(t => t.Position))
-                {
-                    <div class="task-card mb-2" data-task-id="@task.Id">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mb-1">@task.Title</h5>
-                                <p class="text-muted small mb-0">@task.Description</p>
-                            </div>
-                            <div class="task-actions">
-                                <form method="post" asp-page-handler="MoveTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <input type="hidden" name="newStatus" value="inprogress" />
-                                    <button type="submit" class="btn btn-sm btn-outline-secondary">←</button>
-                                </form>
-                                <form method="post" asp-page-handler="DeleteTask">
-                                    <input type="hidden" name="taskId" value="@task.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            <form method="post" asp-page-handler="AddTask" class="mt-3">
-                <input type="hidden" name="status" value="todo" />
-                <div class="input-group mb-2">
-                    <input type="text" name="title" placeholder="New Task" required
-                           class="form-control form-control-sm" />
-                </div>
-                <div class="input-group mb-2">
-                    <textarea name="description" placeholder="Description"
-                              class="form-control form-control-sm"></textarea>
-                </div>
-                <div class="input-group">
-                    <button type="submit" class="btn btn-success btn-sm w-100">+</button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 
@@ -179,7 +86,7 @@
         background: white;
         padding: 0.75rem;
         border-radius: 0.375rem;
-        border: 1px solid #e9ecef;
+        border: 1px solid #3d3d3d;
         transition: transform 0.2s, box-shadow 0.2s;
     }
 
@@ -230,4 +137,148 @@
             margin: 0.5rem 0;
         }
     }
+
+    .task-description {
+        overflow-wrap: anywhere;
+        word-break: keep-all;
+        position: relative;
+        padding-right: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .expand-toggle {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        cursor: pointer;
+        background: white;
+        padding-left: 5px;
+        color: #666;
+        font-size: 0.8em;
+        transition: transform 0.3s;
+        z-index: 2;
+    }
+
+        .expand-toggle:hover {
+            color: #007bff;
+        }
+
+        .expand-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .collapsed {
+            max-height: 3em;
+            overflow: hidden;
+        }
+
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const initExpanders = () => {
+            document.querySelectorAll('.task-description').forEach(desc => {
+                const fullText = desc.dataset.fullText;
+                const maxLength = 150;
+
+                if (desc.classList.contains('processed')) return;
+
+                if (fullText && fullText.length > maxLength) {
+                    const lastSpaceIndex = fullText.lastIndexOf(' ', maxLength);
+                    const previewText = lastSpaceIndex > 0
+                        ? fullText.substring(0, lastSpaceIndex) + '...'
+                        : fullText.substring(0, maxLength) + '...';
+                    const toggle = document.createElement('span');
+                    toggle.className = 'expand-toggle';
+                    toggle.innerHTML = '▼';
+
+                    desc.classList.add('collapsed', 'processed');
+                    desc.textContent = previewText;
+                    desc.appendChild(toggle);
+
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const isExpanded = desc.classList.toggle('collapsed');
+
+                        if (isExpanded) {
+                            desc.textContent = previewText;
+                        } else {
+                            desc.textContent = fullText;
+                        }
+
+                        this.innerHTML = isExpanded ? '▼' : '▲';
+                        desc.appendChild(this);
+                    });
+                }
+            });
+        };
+
+        initExpanders();
+
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+                setTimeout(() => {
+                    initExpanders();
+                }, 100);
+            });
+        });
+    });
+</script>
+
+@functions {
+    public string GetColumnTitle(string status)
+    {
+        return status switch
+        {
+            "todo" => "To Do",
+            "inprogress" => "In Progress",
+            "done" => "Done",
+            _ => status
+        };
+    }
+
+    public string InsertLineBreaks(string text, int maxLineLength = 50)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+
+        var result = new StringBuilder();
+        int currentIndex = 0;
+        int textLength = text.Length;
+
+        while (currentIndex < textLength)
+        {
+            int remaining = textLength - currentIndex;
+
+            if (remaining <= maxLineLength)
+            {
+                result.Append(text.Substring(currentIndex));
+                break;
+            }
+
+            int endIndex = currentIndex + maxLineLength;
+            int lastSpace = text.LastIndexOf(' ', endIndex, maxLineLength);
+
+            if (lastSpace > currentIndex)
+            {
+                result.AppendLine(text.Substring(currentIndex, lastSpace - currentIndex));
+                currentIndex = lastSpace + 1;
+            }
+            else
+            {
+                int nextSpace = text.IndexOf(' ', endIndex);
+
+                if (nextSpace == -1)
+                {
+                    result.Append(text.Substring(currentIndex));
+                    break;
+                }
+
+                result.AppendLine(text.Substring(currentIndex, nextSpace - currentIndex));
+                currentIndex = nextSpace + 1;
+            }
+        }
+
+        return result.ToString()
+            .Replace(Environment.NewLine, "<br/>");
+    }
+}

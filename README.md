@@ -1,3 +1,8 @@
+## Task board application
+A web application for organizing tasks, developed on ASP.NET Core Razor Pages.
+Stack : .NET 8.0, EF Core, Docker, Razor Pages.
+
+
 ## Running the Project with Docker
 
 This project includes a Docker setup for building and running the ASP.NET Core application (`WebApplication1`) using .NET 8.0. The provided Dockerfile and Docker Compose configuration ensure a reproducible environment for development and deployment.
@@ -50,14 +55,16 @@ This project can be run locally using the .NET SDK for development and testing. 
 1. **Restore dependencies:**
    ```sh
    dotnet restore
-
+   ```
 
 2. **Apply database migrations**
   ```sh
   dotnet ef database update
+  ```
 
 3. **Run the application**
   ```sh
   dotnet run --environment Development
+  ```
 
 4. **Application will be availiable at localhost:listetning_port (check out the console)**

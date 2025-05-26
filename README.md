@@ -9,6 +9,7 @@ This project includes a Docker setup for building and running the ASP.NET Core a
 ### Build and Run Instructions
 1. **Build and start the application:**
    ```sh
+   cd ./WebApplication1
    docker compose up --build
    ```
    This command builds the Docker image for `WebApplication1` and starts the container.
@@ -30,6 +31,33 @@ This project includes a Docker setup for building and running the ASP.NET Core a
 - The Docker Compose file is set up for a single service. If you add external dependencies (e.g., databases), update the `depends_on` and `networks` sections as needed.
 - The build context for the service is `./WebApplication1`, but it uses the Dockerfile at the project root (`../Dockerfile`).
 
+
+## Running the Project with .NET SDK
+
+This project can be run locally using the .NET SDK for development and testing. The application uses SQLite for database storage and Entity Framework Core for data management.
+
 ---
 
-_This section was last updated to reflect the current Docker setup. Please ensure your local environment matches the requirements above for a smooth experience._
+### Requirements
+- **.NET 8.0 SDK** (or later)
+- **SQLite** (automatically embedded, no separate installation required)
+- **Entity Framework Core Tools** (for database migrations)
+
+---
+
+### Build and Run Instructions
+
+1. **Restore dependencies:**
+   ```sh
+   dotnet restore
+
+
+2. **Apply database migrations**
+  ```sh
+  dotnet ef database update
+
+3. **Run the application**
+  ```sh
+  dotnet run --environment Development
+
+4. **Application will be availiable at localhost:listetning_port (check out the console)**
